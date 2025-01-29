@@ -1,4 +1,7 @@
-name: DelayPresurplate
-version: '0.1-SNAPSHOT'
-main: am.FroshGames.delayPresurplate.DelayPresurplate
-api-version: '1.20'
+name: DelayedPressurePlate
+version: 0.2
+main: am.FroshGames.delayPresurplate.DelayedPressurePlate.DelayedPressurePlate
+commands:
+  delayedplate:
+    description: Comando para gestionar el delay de las placas de presión
+    usage: /delayedplate <setdelay|add|remove> [valor]

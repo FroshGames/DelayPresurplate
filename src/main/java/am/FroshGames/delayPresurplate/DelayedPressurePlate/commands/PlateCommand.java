@@ -18,7 +18,6 @@ public class PlateCommand implements CommandExecutor {
             return true;
         }
         Player player = (Player) sender;
-        FileConfiguration config = DelayedPressurePlate.getInstance().getConfig();
 
         if (args.length < 1) {
             player.sendMessage("Uso: /delayedplate <setdelay|add|remove> [valor]");
@@ -33,8 +32,9 @@ public class PlateCommand implements CommandExecutor {
                 }
                 try {
                     int seconds = Integer.parseInt(args[1]);
-                    config.set("delay", seconds);
-                    DelayedPressurePlate.getInstance().saveConfig();
+                    delayTicks = seconds * 20;
+                    getConfig().set("delay", seconds);
+                    saveConfig();
                     player.sendMessage("El delay ha sido establecido en " + seconds + " segundos.");
                 } catch (NumberFormatException e) {
                     player.sendMessage("El valor debe ser un número entero.");
@@ -46,24 +46,26 @@ public class PlateCommand implements CommandExecutor {
                     player.sendMessage("Debes mirar una placa de presión.");
                     return true;
                 }
-                List<String> plates = config.getStringList("plates");
+                affectedPlates.add(block.getType());
+                List<String> plates = getConfig().getStringList("plates");
                 if (!plates.contains(block.getType().name())) {
                     plates.add(block.getType().name());
-                    config.set("plates", plates);
-                    DelayedPressurePlate.getInstance().saveConfig();
+                    getConfig().set("plates", plates);
+                    saveConfig();
                 }
                 player.sendMessage("Placa de presión añadida a la lista.");
                 break;
             case "remove":
                 block = player.getTargetBlockExact(5);
-                if (block == null || !config.getStringList("plates").contains(block.getType().name())) {
+                if (block == null || !affectedPlates.contains(block.getType())) {
                     player.sendMessage("Debes mirar una placa de presión en la lista.");
                     return true;
                 }
-                plates = config.getStringList("plates");
+                affectedPlates.remove(block.getType());
+                plates = getConfig().getStringList("plates");
                 plates.remove(block.getType().name());
-                config.set("plates", plates);
-                DelayedPressurePlate.getInstance().saveConfig();
+                getConfig().set("plates", plates);
+                saveConfig();
                 player.sendMessage("Placa de presión eliminada de la lista.");
                 break;
             default:
