@@ -1,0 +1,5 @@
+delay: 10  # Tiempo de retraso en segundos antes de que la señal de la placa de presión se active
+
+plates:
+  - STONE_PRESSURE_PLATE  # Lista de placas de presión afectadas por el retraso
+  - OAK_PRESSURE_PLATE
