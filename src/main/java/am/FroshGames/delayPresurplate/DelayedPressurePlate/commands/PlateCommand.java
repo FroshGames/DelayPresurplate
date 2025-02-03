@@ -1,12 +1,13 @@
 package am.FroshGames.delayPresurplate.DelayedPressurePlate.commands;
 
 import am.FroshGames.delayPresurplate.DelayedPressurePlate.DelayedPressurePlate;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+
 import java.util.List;
 
 public class PlateCommand implements CommandExecutor {
@@ -20,7 +21,7 @@ public class PlateCommand implements CommandExecutor {
         Player player = (Player) sender;
 
         if (args.length < 1) {
-            player.sendMessage("Uso: /delayedplate <setdelay|add|remove> [valor]");
+            player.sendMessage("Uso: /delayedplate <setdelay|add|remove|reload> [valor]");
             return true;
         }
 
@@ -32,44 +33,49 @@ public class PlateCommand implements CommandExecutor {
                 }
                 try {
                     int seconds = Integer.parseInt(args[1]);
-                    delayTicks = seconds * 20;
-                    getConfig().set("delay", seconds);
-                    saveConfig();
+                    DelayedPressurePlate.getInstance().getConfig().set("delay", seconds);
+                    DelayedPressurePlate.getInstance().saveConfig();
                     player.sendMessage("El delay ha sido establecido en " + seconds + " segundos.");
                 } catch (NumberFormatException e) {
                     player.sendMessage("El valor debe ser un número entero.");
                 }
                 break;
+
             case "add":
                 Block block = player.getTargetBlockExact(5);
                 if (block == null || !block.getType().name().endsWith("_PRESSURE_PLATE")) {
                     player.sendMessage("Debes mirar una placa de presión.");
                     return true;
                 }
-                affectedPlates.add(block.getType());
-                List<String> plates = getConfig().getStringList("plates");
+                List<String> plates = DelayedPressurePlate.getInstance().getConfig().getStringList("plates");
                 if (!plates.contains(block.getType().name())) {
                     plates.add(block.getType().name());
-                    getConfig().set("plates", plates);
-                    saveConfig();
+                    DelayedPressurePlate.getInstance().getConfig().set("plates", plates);
+                    DelayedPressurePlate.getInstance().saveConfig();
                 }
                 player.sendMessage("Placa de presión añadida a la lista.");
                 break;
+
             case "remove":
                 block = player.getTargetBlockExact(5);
-                if (block == null || !affectedPlates.contains(block.getType())) {
+                if (block == null || !DelayedPressurePlate.getInstance().getConfig().getStringList("plates").contains(block.getType().name())) {
                     player.sendMessage("Debes mirar una placa de presión en la lista.");
                     return true;
                 }
-                affectedPlates.remove(block.getType());
-                plates = getConfig().getStringList("plates");
+                plates = DelayedPressurePlate.getInstance().getConfig().getStringList("plates");
                 plates.remove(block.getType().name());
-                getConfig().set("plates", plates);
-                saveConfig();
+                DelayedPressurePlate.getInstance().getConfig().set("plates", plates);
+                DelayedPressurePlate.getInstance().saveConfig();
                 player.sendMessage("Placa de presión eliminada de la lista.");
                 break;
+
+            case "reload":
+                DelayedPressurePlate.getInstance().reloadConfig();
+                player.sendMessage("La configuración se ha recargado.");
+                break;
+
             default:
-                player.sendMessage("Comando desconocido. Uso: /delayedplate <setdelay|add|remove> [valor]");
+                player.sendMessage("Comando desconocido. Uso: /delayedplate <setdelay|add|remove|reload> [valor]");
                 break;
         }
         return true;

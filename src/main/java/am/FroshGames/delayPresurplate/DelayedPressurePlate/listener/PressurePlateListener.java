@@ -8,10 +8,10 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockRedstoneEvent;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import am.FroshGames.delayPresurplate.DelayedPressurePlate.DelayedPressurePlate;
 
 public class PressurePlateListener implements Listener {
 
@@ -22,7 +22,7 @@ public class PressurePlateListener implements Listener {
         loadConfig();
     }
 
-    private void loadConfig() {
+    public void loadConfig() {
         FileConfiguration config = DelayedPressurePlate.getInstance().getConfig();
         delayTicks = config.getInt("delay", 10) * 20; // Convertir segundos a ticks
         affectedPlates.clear();

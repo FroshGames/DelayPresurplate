@@ -1,7 +1,7 @@
 package am.FroshGames.delayPresurplate.DelayedPressurePlate;
 
-import am.FroshGames.delayPresurplate.DelayedPressurePlate.commands.PlateCommand;
 import am.FroshGames.delayPresurplate.DelayedPressurePlate.listener.PressurePlateListener;
+import am.FroshGames.delayPresurplate.DelayedPressurePlate.commands.PlateCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class DelayedPressurePlate extends JavaPlugin {

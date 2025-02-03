@@ -4,4 +4,10 @@ main: am.FroshGames.delayPresurplate.DelayedPressurePlate.DelayedPressurePlate
 commands:
   delayedplate:
     description: Comando para gestionar el delay de las placas de presión
-    usage: /delayedplate <setdelay|add|remove> [valor]
+    usage: /delayedplate <setdelay|add|remove|reload> [valor]
+    permission: delayedplate.use
+
+permissions:
+  delayedplate.use:
+    description: Permiso para usar el comando /delayedplate
+    default: op
