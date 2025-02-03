@@ -27,6 +27,7 @@ public class PressurePlateListener implements Listener {
         delayTicks = config.getInt("delay", 10) * 20; // Convertir segundos a ticks
         affectedPlates.clear();
         List<String> plates = config.getStringList("plates");
+
         for (String plate : plates) {
             try {
                 affectedPlates.add(Material.valueOf(plate));
@@ -39,9 +40,15 @@ public class PressurePlateListener implements Listener {
     @EventHandler
     public void onRedstoneChange(BlockRedstoneEvent event) {
         Block block = event.getBlock();
+
+        // Recargar la lista de placas en cada evento para asegurar que esté actualizada
+        loadConfig();
+
         if (affectedPlates.contains(block.getType()) && event.getNewCurrent() > 0) {
             event.setNewCurrent(0);
-            Bukkit.getScheduler().runTaskLater(DelayedPressurePlate.getInstance(), () -> block.getState().update(true, false), delayTicks);
+            Bukkit.getScheduler().runTaskLater(DelayedPressurePlate.getInstance(), () -> {
+                block.getState().update(true, false);
+            }, delayTicks);
         }
     }
 }

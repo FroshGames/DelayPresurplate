@@ -2,13 +2,17 @@ package am.FroshGames.delayPresurplate.DelayedPressurePlate.commands;
 
 import am.FroshGames.delayPresurplate.DelayedPressurePlate.DelayedPressurePlate;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PlateCommand implements CommandExecutor {
 
@@ -42,22 +46,35 @@ public class PlateCommand implements CommandExecutor {
                 break;
 
             case "add":
-                Block block = player.getTargetBlockExact(5);
-                if (block == null || !block.getType().name().endsWith("_PRESSURE_PLATE")) {
-                    player.sendMessage("Debes mirar una placa de presión.");
-                    return true;
-                }
+                int radius = args.length > 1 ? Integer.parseInt(args[1]) : 10; // Rango por defecto: 10 bloques
                 List<String> plates = DelayedPressurePlate.getInstance().getConfig().getStringList("plates");
-                if (!plates.contains(block.getType().name())) {
-                    plates.add(block.getType().name());
-                    DelayedPressurePlate.getInstance().getConfig().set("plates", plates);
-                    DelayedPressurePlate.getInstance().saveConfig();
+                Set<String> addedPlates = new HashSet<>(plates);
+                int count = 0;
+
+                World world = player.getWorld();
+                int px = player.getLocation().getBlockX();
+                int py = player.getLocation().getBlockY();
+                int pz = player.getLocation().getBlockZ();
+
+                for (int x = -radius; x <= radius; x++) {
+                    for (int y = -radius; y <= radius; y++) {
+                        for (int z = -radius; z <= radius; z++) {
+                            Block block = world.getBlockAt(px + x, py + y, pz + z);
+
+                            if (block.getType().name().endsWith("_PRESSURE_PLATE") && addedPlates.add(block.getType().name())) {
+                                count++;
+                            }
+                        }
+                    }
                 }
-                player.sendMessage("Placa de presión añadida a la lista.");
+
+                DelayedPressurePlate.getInstance().getConfig().set("plates", addedPlates.stream().collect(Collectors.toList()));
+                DelayedPressurePlate.getInstance().saveConfig();
+                player.sendMessage(count + " placas de presión añadidas en un radio de " + radius + " bloques.");
                 break;
 
             case "remove":
-                block = player.getTargetBlockExact(5);
+                Block block = player.getTargetBlockExact(5);
                 if (block == null || !DelayedPressurePlate.getInstance().getConfig().getStringList("plates").contains(block.getType().name())) {
                     player.sendMessage("Debes mirar una placa de presión en la lista.");
                     return true;
