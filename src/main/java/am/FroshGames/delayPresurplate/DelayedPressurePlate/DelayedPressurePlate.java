@@ -25,3 +25,4 @@ public class DelayedPressurePlate extends JavaPlugin {
         return instance;
     }
 }
+//Desarrollado por [Froshy]
